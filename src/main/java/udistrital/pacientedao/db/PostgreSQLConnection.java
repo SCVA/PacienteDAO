@@ -10,6 +10,11 @@ package udistrital.pacientedao.db;
  */
 public class PostgreSQLConnection extends DBConnection{
     private static PostgreSQLConnection instancia;
+    /*
+    Por ser un caso academico se dejan enunciadas en el codigo
+    pero deben ser protegidas, puede ser como variables de entorno,
+    secretos, o desde un archivo codificado.
+    */
     private static final String HOST = "localhost";
     private static final String PORT = "5434";
     private static final String USER = "postgres";
