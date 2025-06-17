@@ -15,7 +15,7 @@
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <maven.compiler.release>24</maven.compiler.release>
-        <exec.mainClass>udistrital.pacientedao.PacienteDAO</exec.mainClass>
+        <exec.mainClass>udistrital.pacientedao.PacienteApp</exec.mainClass>
     </properties>
     <name>PacienteDAO</name>
 </project>
