@@ -48,7 +48,7 @@ public class PacienteDAO implements GenericDAO {
 
     @Override
     public Object buscarPorId(Object id) throws SQLException {
-        int cedula = (Integer) id;
+        long cedula = (Long) id;
         final String sql = "SELECT * FROM public.paciente WHERE cedula = ?";
 
         try (Connection c = con.getConnection();
@@ -103,7 +103,7 @@ public class PacienteDAO implements GenericDAO {
 
     @Override
     public boolean eliminar(Object id) throws SQLException {
-        int cedula = (Integer) id;
+        long cedula = (Long) id;
         final String sql = "DELETE FROM public.paciente WHERE cedula = ?";
 
         try (Connection c = con.getConnection();
