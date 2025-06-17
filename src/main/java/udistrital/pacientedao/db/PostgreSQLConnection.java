@@ -9,7 +9,7 @@ package udistrital.pacientedao.db;
  * @author Sebastian
  */
 public class PostgreSQLConnection extends DBConnection{
-    private PostgreSQLConnection instancia;
+    private static PostgreSQLConnection instancia;
     private static final String HOST = "localhost";
     private static final String PORT = "5434";
     private static final String USER = "postgres";
@@ -17,15 +17,12 @@ public class PostgreSQLConnection extends DBConnection{
     private static final String DATABASE = "Hospital";
 
     private PostgreSQLConnection() {
-        url = "jdbc:postgresql://";
-        props.setProperty("host", HOST);
-        props.setProperty("port", PORT);
+        url = "jdbc:postgresql://"+HOST+":"+PORT+"/"+DATABASE;
         props.setProperty("user", USER);
         props.setProperty("password", PASSWORD);
-        props.setProperty("database", DATABASE);
     }
 
-    public PostgreSQLConnection getConnector (){
+    public static PostgreSQLConnection getConnector (){
         if(instancia==null)
             instancia = new PostgreSQLConnection();
         return instancia;
