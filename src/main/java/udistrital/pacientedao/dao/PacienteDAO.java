@@ -33,7 +33,7 @@ public class PacienteDAO implements GenericDAO {
                 + "(cedula, fechanac, primern, segundon, primera, segundoa) "
                 + "VALUES (?,?,?,?,?,?)";
         try (
-                Connection c = con.getConnection(); 
+                Connection c = con.getConn(); 
                 PreparedStatement ps = c.prepareStatement(sql)) {
                     ps.setLong(1, p.getCedula());
                     ps.setObject(2, p.getFechaNac());
@@ -51,7 +51,7 @@ public class PacienteDAO implements GenericDAO {
         long cedula = (Long) id;
         final String sql = "SELECT * FROM public.paciente WHERE cedula = ?";
 
-        try (Connection c = con.getConnection();
+        try (Connection c = con.getConn();
              PreparedStatement ps = c.prepareStatement(sql)) {
 
             ps.setLong(1, cedula);
@@ -66,7 +66,7 @@ public class PacienteDAO implements GenericDAO {
     public ArrayList listarTodos() throws SQLException {
         final String sql = "SELECT * FROM public.paciente ORDER BY cedula";
 
-        try (Connection c = con.getConnection();
+        try (Connection c = con.getConn();
              PreparedStatement ps = c.prepareStatement(sql);
              ResultSet rs = ps.executeQuery()) {
 
@@ -86,7 +86,7 @@ public class PacienteDAO implements GenericDAO {
             "fechanac = ?, primern = ?, segundon = ?, primera = ?, segundoa = ? " +
             "WHERE cedula = ?";
 
-        try (Connection c = con.getConnection();
+        try (Connection c = con.getConn();
              PreparedStatement ps = c.prepareStatement(sql)) {
 
             ps.setObject(1, p.getFechaNac());
@@ -106,7 +106,7 @@ public class PacienteDAO implements GenericDAO {
         long cedula = (Long) id;
         final String sql = "DELETE FROM public.paciente WHERE cedula = ?";
 
-        try (Connection c = con.getConnection();
+        try (Connection c = con.getConn();
              PreparedStatement ps = c.prepareStatement(sql)) {
 
             ps.setLong(1, cedula);

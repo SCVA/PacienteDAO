@@ -37,7 +37,7 @@ public class PacienteApp {
     private final JTextField sApellidoField = new JTextField();
 
     public PacienteApp() {
-        DBConnection con = new PostgreSQLConnection();
+        DBConnection con = PostgreSQLConnection.getConnector();
         dao = new udistrital.pacientedao.dao.PacienteDAO(con);
 
         frame = new JFrame("Pacientes");

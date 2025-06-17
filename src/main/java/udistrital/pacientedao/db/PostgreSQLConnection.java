@@ -4,8 +4,6 @@
  */
 package udistrital.pacientedao.db;
 
-import java.sql.*;
-
 /**
  *
  * @author Sebastian
@@ -27,10 +25,9 @@ public class PostgreSQLConnection extends DBConnection{
         props.setProperty("database", DATABASE);
     }
 
-    @Override
-    public Connection getConnection () throws SQLException{
+    public PostgreSQLConnection getConnector (){
         if(instancia==null)
             instancia = new PostgreSQLConnection();
-        return instancia.getConn();
+        return instancia;
     }
 }

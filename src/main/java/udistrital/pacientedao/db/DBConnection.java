@@ -18,10 +18,8 @@ public abstract class DBConnection {
     private Connection conn;
     protected final Properties props = new Properties();
     
-    protected Connection getConn() throws SQLException{
+    public Connection getConn() throws SQLException{
         conn = DriverManager.getConnection(url,props);
         return conn;
     }
-    
-    public abstract Connection getConnection () throws SQLException;
 }
