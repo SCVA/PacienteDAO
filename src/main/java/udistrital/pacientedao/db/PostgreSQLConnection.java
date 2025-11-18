@@ -16,7 +16,7 @@ public class PostgreSQLConnection extends DBConnection{
     secretos, o desde un archivo codificado.
     */
     private static final String HOST = "localhost";
-    private static final String PORT = "5434";
+    private static final String PORT = "5432";
     private static final String USER = "postgres";
     private static final String PASSWORD = "postgres";
     private static final String DATABASE = "Hospital";
