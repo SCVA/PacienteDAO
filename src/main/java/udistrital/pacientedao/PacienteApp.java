@@ -21,6 +21,8 @@ import udistrital.pacientedao.db.PostgreSQLConnection;
 import udistrital.pacientedao.modelo.Paciente;
 import udistrital.pacientedao.dao.FarmaciaDAO;
 import udistrital.pacientedao.modelo.Farmacia;
+import udistrital.pacientedao.dao.MedicinaDAO;
+import udistrital.pacientedao.modelo.Medicina;
 
 /**
  * Simple GUI application that provides CRUD operations for Paciente.
@@ -29,6 +31,7 @@ public class PacienteApp {
 
     private final udistrital.pacientedao.dao.PacienteDAO dao;
     private final FarmaciaDAO farmaciaDao;
+    private final MedicinaDAO medicinaDao;
 
     private final JFrame frame;
     private final JTable table;
@@ -36,6 +39,9 @@ public class PacienteApp {
 
     private final JTable farmaciaTable;
     private final DefaultTableModel farmaciaModel;
+
+    private final JTable medicinaTable;
+    private final DefaultTableModel medicinaModel;
 
     private final JTextField cedulaField = new JTextField();
     private final JTextField fechaField = new JTextField();
@@ -50,10 +56,14 @@ public class PacienteApp {
     private final JTextField carreraField = new JTextField();
     private final JTextField numeroField = new JTextField();
 
+    private final JTextField idMedicinaField = new JTextField();
+    private final JTextField nombreGenericoField = new JTextField();
+
     public PacienteApp() {
         DBConnection con = PostgreSQLConnection.getConnector();
         dao = new udistrital.pacientedao.dao.PacienteDAO(con);
         farmaciaDao = new FarmaciaDAO(con);
+        medicinaDao = new MedicinaDAO(con);
 
         frame = new JFrame("Hospital");
 
@@ -61,6 +71,8 @@ public class PacienteApp {
         table = new JTable(model);
         farmaciaModel = new DefaultTableModel(new Object[]{"Id", "Nombre", "Calle", "Carrera", "Numero"}, 0);
         farmaciaTable = new JTable(farmaciaModel);
+        medicinaModel = new DefaultTableModel(new Object[]{"Id", "Nombre Genérico"}, 0);
+        medicinaTable = new JTable(medicinaModel);
 
         JTabbedPane tabs = new JTabbedPane();
 
@@ -124,8 +136,32 @@ public class PacienteApp {
         farmaciaPanel.add(new JScrollPane(farmaciaTable), BorderLayout.CENTER);
         farmaciaPanel.add(farmaciaButtons, BorderLayout.SOUTH);
 
+        // Panel Medicina
+        JPanel medicinaForm = new JPanel(new GridLayout(2, 2));
+        medicinaForm.add(new JLabel("Id"));
+        medicinaForm.add(idMedicinaField);
+        medicinaForm.add(new JLabel("Nombre Genérico"));
+        medicinaForm.add(nombreGenericoField);
+
+        JButton createMBtn = new JButton("Crear");
+        JButton updateMBtn = new JButton("Actualizar");
+        JButton deleteMBtn = new JButton("Eliminar");
+        JButton refreshMBtn = new JButton("Refrescar");
+
+        JPanel medicinaButtons = new JPanel();
+        medicinaButtons.add(createMBtn);
+        medicinaButtons.add(updateMBtn);
+        medicinaButtons.add(deleteMBtn);
+        medicinaButtons.add(refreshMBtn);
+
+        JPanel medicinaPanel = new JPanel(new BorderLayout());
+        medicinaPanel.add(medicinaForm, BorderLayout.NORTH);
+        medicinaPanel.add(new JScrollPane(medicinaTable), BorderLayout.CENTER);
+        medicinaPanel.add(medicinaButtons, BorderLayout.SOUTH);
+
         tabs.addTab("Pacientes", pacientePanel);
         tabs.addTab("Farmacias", farmaciaPanel);
+        tabs.addTab("Medicina", medicinaPanel);
 
         frame.setLayout(new BorderLayout());
         frame.add(tabs, BorderLayout.CENTER);
@@ -194,8 +230,40 @@ public class PacienteApp {
             }
         });
 
+        createMBtn.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                crearMedicina();
+                refrescarMedicina();
+            }
+        });
+
+        updateMBtn.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                actualizarMedicina();
+                refrescarMedicina();
+            }
+        });
+
+        deleteMBtn.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                eliminarMedicina();
+                refrescarMedicina();
+            }
+        });
+
+        refreshMBtn.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                refrescarMedicina();
+            }
+        });
+
         refrescar();
         refrescarFarmacia();
+        refrescarMedicina();
     }
 
     private Paciente fromFields() {
@@ -297,6 +365,52 @@ public class PacienteApp {
                     f.getCalle(),
                     f.getCarrera(),
                     f.getNumero()
+                });
+            }
+        } catch (SQLException ex) {
+            ex.printStackTrace();
+        }
+    }
+
+    private Medicina fromMedicinaFields() {
+        return new Medicina(
+                Integer.parseInt(idMedicinaField.getText()),
+                nombreGenericoField.getText()
+        );
+    }
+
+    private void crearMedicina() {
+        try {
+            medicinaDao.crear(fromMedicinaFields());
+        } catch (SQLException ex) {
+            ex.printStackTrace();
+        }
+    }
+
+    private void actualizarMedicina() {
+        try {
+            medicinaDao.actualizar(fromMedicinaFields());
+        } catch (SQLException ex) {
+            ex.printStackTrace();
+        }
+    }
+
+    private void eliminarMedicina() {
+        try {
+            medicinaDao.eliminar(Integer.parseInt(idMedicinaField.getText()));
+        } catch (SQLException ex) {
+            ex.printStackTrace();
+        }
+    }
+
+    private void refrescarMedicina() {
+        medicinaModel.setRowCount(0);
+        try {
+            for (Object obj : medicinaDao.listarTodos()) {
+                Medicina m = (Medicina) obj;
+                medicinaModel.addRow(new Object[]{
+                    m.getIdMedicina(),
+                    m.getNombreGenerico()
                 });
             }
         } catch (SQLException ex) {
