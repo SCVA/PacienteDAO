@@ -23,6 +23,8 @@ import udistrital.pacientedao.dao.FarmaciaDAO;
 import udistrital.pacientedao.modelo.Farmacia;
 import udistrital.pacientedao.dao.MedicinaDAO;
 import udistrital.pacientedao.modelo.Medicina;
+import udistrital.pacientedao.dao.TelefonofDAO;
+import udistrital.pacientedao.modelo.Telefonof;
 
 /**
  * Simple GUI application that provides CRUD operations for Paciente.
@@ -32,6 +34,7 @@ public class PacienteApp {
     private final udistrital.pacientedao.dao.PacienteDAO dao;
     private final FarmaciaDAO farmaciaDao;
     private final MedicinaDAO medicinaDao;
+    private final TelefonofDAO telefonofDao;
 
     private final JFrame frame;
     private final JTable table;
@@ -59,11 +62,15 @@ public class PacienteApp {
     private final JTextField idMedicinaField = new JTextField();
     private final JTextField nombreGenericoField = new JTextField();
 
+    private final JTextField telefonoFField = new JTextField();
+    private final JTextField idFarmaciaTelefonoField = new JTextField();
+
     public PacienteApp() {
         DBConnection con = PostgreSQLConnection.getConnector();
         dao = new udistrital.pacientedao.dao.PacienteDAO(con);
         farmaciaDao = new FarmaciaDAO(con);
         medicinaDao = new MedicinaDAO(con);
+        telefonofDao = new TelefonofDAO(con);
 
         frame = new JFrame("Hospital");
 
@@ -73,6 +80,9 @@ public class PacienteApp {
         farmaciaTable = new JTable(farmaciaModel);
         medicinaModel = new DefaultTableModel(new Object[]{"Id", "Nombre Genérico"}, 0);
         medicinaTable = new JTable(medicinaModel);
+
+        DefaultTableModel telefonoModel = new DefaultTableModel(new Object[]{"Telefono", "Id Farmacia"}, 0);
+        JTable telefonoTable = new JTable(telefonoModel);
 
         JTabbedPane tabs = new JTabbedPane();
 
@@ -159,9 +169,33 @@ public class PacienteApp {
         medicinaPanel.add(new JScrollPane(medicinaTable), BorderLayout.CENTER);
         medicinaPanel.add(medicinaButtons, BorderLayout.SOUTH);
 
+        // Panel TelefonoF
+        JPanel telefonoForm = new JPanel(new GridLayout(2, 2));
+        telefonoForm.add(new JLabel("Telefono"));
+        telefonoForm.add(telefonoFField);
+        telefonoForm.add(new JLabel("Id Farmacia"));
+        telefonoForm.add(idFarmaciaTelefonoField);
+
+        JButton createTBtn = new JButton("Crear");
+        JButton updateTBtn = new JButton("Actualizar");
+        JButton deleteTBtn = new JButton("Eliminar");
+        JButton refreshTBtn = new JButton("Refrescar");
+
+        JPanel telefonoButtons = new JPanel();
+        telefonoButtons.add(createTBtn);
+        telefonoButtons.add(updateTBtn);
+        telefonoButtons.add(deleteTBtn);
+        telefonoButtons.add(refreshTBtn);
+
+        JPanel telefonoPanel = new JPanel(new BorderLayout());
+        telefonoPanel.add(telefonoForm, BorderLayout.NORTH);
+        telefonoPanel.add(new JScrollPane(telefonoTable), BorderLayout.CENTER);
+        telefonoPanel.add(telefonoButtons, BorderLayout.SOUTH);
+
         tabs.addTab("Pacientes", pacientePanel);
         tabs.addTab("Farmacias", farmaciaPanel);
         tabs.addTab("Medicina", medicinaPanel);
+        tabs.addTab("TelefonoF", telefonoPanel);
 
         frame.setLayout(new BorderLayout());
         frame.add(tabs, BorderLayout.CENTER);
@@ -261,9 +295,41 @@ public class PacienteApp {
             }
         });
 
+                createTBtn.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                crearTelefonoF();
+                refrescarTelefonoF(telefonoModel);
+            }
+        });
+
+        updateTBtn.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                actualizarTelefonoF();
+                refrescarTelefonoF(telefonoModel);
+            }
+        });
+
+        deleteTBtn.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                eliminarTelefonoF();
+                refrescarTelefonoF(telefonoModel);
+            }
+        });
+
+        refreshTBtn.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                refrescarTelefonoF(telefonoModel);
+            }
+        });
+
         refrescar();
         refrescarFarmacia();
         refrescarMedicina();
+        refrescarTelefonoF(telefonoModel);
     }
 
     private Paciente fromFields() {
@@ -411,6 +477,52 @@ public class PacienteApp {
                 medicinaModel.addRow(new Object[]{
                     m.getIdMedicina(),
                     m.getNombreGenerico()
+                });
+            }
+        } catch (SQLException ex) {
+            ex.printStackTrace();
+        }
+    }
+
+    private Telefonof fromTelefonoFFields() {
+        return new Telefonof(
+                Long.parseLong(telefonoFField.getText()),
+                Integer.parseInt(idFarmaciaTelefonoField.getText())
+        );
+    }
+
+    private void crearTelefonoF() {
+        try {
+            telefonofDao.crear(fromTelefonoFFields());
+        } catch (SQLException ex) {
+            ex.printStackTrace();
+        }
+    }
+
+    private void actualizarTelefonoF() {
+        try {
+            telefonofDao.actualizar(fromTelefonoFFields());
+        } catch (SQLException ex) {
+            ex.printStackTrace();
+        }
+    }
+
+    private void eliminarTelefonoF() {
+        try {
+            telefonofDao.eliminar(Long.parseLong(telefonoFField.getText()));
+        } catch (SQLException ex) {
+            ex.printStackTrace();
+        }
+    }
+
+    private void refrescarTelefonoF(DefaultTableModel telefonoModel) {
+        telefonoModel.setRowCount(0);
+        try {
+            for (Object obj : telefonofDao.listarTodos()) {
+                Telefonof t = (Telefonof) obj;
+                telefonoModel.addRow(new Object[]{
+                    t.getTelefonof(),
+                    t.getIdFarmacia()
                 });
             }
         } catch (SQLException ex) {
